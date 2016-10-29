@@ -1,0 +1,9 @@
+<VirtualHost *:80>
+    DocumentRoot /share/sandbox/app/webroot
+    ServerName sandbox.local
+    ErrorLog /var/log/httpd/sandbox-error_log
+    CustomLog /var/log/httpd/sandbox-access_log common
+    <Directory "/share/sandbox/app/webroot">
+        AllowOverride All
+    </Directory>
+</VirtualHost>

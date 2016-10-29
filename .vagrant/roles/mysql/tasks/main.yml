@@ -1,0 +1,39 @@
+# Install mysqld_5.6
+---
+- name:  Install mysql repo.
+  yum:
+    name: http://dev.mysql.com/get/mysql57-community-release-el6-7.noarch.rpm
+    state: present
+- name: Install Mysql package
+  yum:
+    name: "{{ item }}"
+    enablerepo: mysql56-community
+    disablerepo: mysql57-community
+    state: present
+  with_items:
+    - mysql-community-server
+    - mysql-community-client
+    - mysql-community-common
+    - mysql-community-libs
+    - mysql-community-libs-compat
+    - MySQL-python
+    - libselinux-python
+    - libsemanage-python
+- name: Configure SELinux to start mysql on any port
+  seboolean: name=mysql_connect_any state=true persistent=yes
+  when: ansible_selinux.status == "enabled"
+- name: Create Mysql configuration file
+  template: src=my.cnf.j2 dest=/etc/my.cnf
+  notify: 
+  - restart mysql
+- name: Start Mysql Service
+  service: name=mysqld state=started enabled=yes
+- name: get mysql password
+  shell: cat /root/.mysql_secret | awk '{print $18}'
+  register: mysql_root_password
+- name: copy .my.cnf
+  template: src=my.cnf.j2 dest=/root/.my.cnf owner=root mode=0600
+- name: setup mysql database
+  mysql_db: name=test state=present
+- name: setup mysql user
+  mysql_user: name=test password=pass priv=*.*:ALL,GRANT state=present

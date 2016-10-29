@@ -1,0 +1,68 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.ssh.forward_agent = true
+  config.vm.box = "boxcutter/centos67"
+  config.vm.network "private_network", ip: "192.168.33.33"
+  config.vm.synced_folder "../../sandbox", "/share/sandbox",
+    create: true, owner: "vagrant", group: "vagrant",
+    mount_options: ["dmode=777,fmode=777"]
+
+  config.vm.provider "virtualbox" do |v, override|
+    v.name = "sandbox"
+    v.customize ["modifyvm", :id, "--rtcuseutc", "on"]
+    v.customize ["modifyvm", :id, "--cpuexecutioncap", "90"]
+    v.customize ["modifyvm", :id, "--memory", "1024"]
+    v.customize ["modifyvm", :id, "--cpus", "1"]
+  end
+
+  config.vm.provider :vmware_fusion do |v, override|
+    v.vmx["memsize"] = "1024"
+    v.vmx["numvcpus"] = "1"
+  end
+
+  config.vm.provider :parallels do |v, override|
+    v.memory = 1024
+    v.cpus = 1
+  end
+
+  if Vagrant.has_plugin?("vagrant-cachier")
+    config.cache.scope = :box
+  end
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.playbook = "playbook.yml"
+  end
+
+  # config.vm.provision :shell, inline: <<-EOT
+  #   sudo su
+  #   rpm -Uvh http://ftp.iij.ad.jp/pub/linux/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+  #   rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+  #   yum -y install git
+  #   yum -y install httpd httpd-devel httpd-tools
+  #   service httpd start
+  #   chkconfig httpd on
+  #   yum -y install mysql mysql-libs mysql-server --enablerepo=remi
+  #   /etc/rc.d/init.d/mysqld start
+  #   mysql -uroot -e 'CREATE DATABASE sandbox CHARACTER SET utf8 COLLATE utf8_general_ci'
+  #   mysql -uroot -e 'GRANT ALL ON sandbox.* TO sandbox@localhost IDENTIFIED BY "sandbox"'
+  #   mysql -uroot -e 'FLUSH PRIVILEGES'
+  #   chkconfig mysqld on
+  #   yum -y install libxml2 libxml2-devel libcurl libcurl-devel libjpeg-devel libpng-devel libtidy libtidy-devel libxslt
+  #   yum -y --enablerepo=epel install libmcrypt libmcrypt-devel
+  #   yum -y install --enablerepo=remi --enablerepo=remi-php56 php php-opcache php-devel php-mbstring php-mcrypt php-mysqlnd php-phpunit-PHPUnit php-pecl-xdebug php-pecl-xhprof php-gd
+  #   cp /share/sandbox/.vagrant/conf/vhost.conf /etc/httpd/conf.d/
+  #   chmod -R 755 /share/sandbox/app/tmp
+  #   chmod -R 777 /share/sandbox/app/tmp
+  #   cd ~/
+  #   curl -sS https://getcomposer.org/installer | php
+  #   mv composer.phar /usr/local/bin/composer
+  #   service httpd restart
+  #   cd /share/sandbox
+  # EOT
+  # end
+end

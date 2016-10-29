@@ -28,3 +28,10 @@
 Icon?
 ehthumbs.db
 Thumbs.db
+
+# Vagrant and Ansible generated files #
+######################
+/.vagrant/.vagrant/
+/.vagrant/*.retry
+
+composer.phar

@@ -1,0 +1,13 @@
+---
+- name: sandbox environment installation
+  hosts: all
+  remote_user: root
+  # remote_user: user
+  sudo: yes
+
+  roles:
+    - common
+    - mysql
+    - httpd24
+    - php56
+    - sandbox

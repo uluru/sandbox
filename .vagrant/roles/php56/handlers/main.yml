@@ -1,0 +1,7 @@
+
+---
+- name: restart php
+  service: name=php state=restarted
+
+- name: restart httpd
+  service: name=httpd state=restarted

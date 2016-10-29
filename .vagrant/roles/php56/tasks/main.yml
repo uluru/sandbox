@@ -1,0 +1,18 @@
+---
+- name: Installing PHP
+  yum: pkg={{ item }} state=installed enablerepo=remi,remi-php56
+  with_items:
+    - php
+    - php-mbstring
+    - php-mysql
+    - php-cli
+    - php-mysqlnd
+    - php-phpunit-PHPUnit
+    - php-pecl-xdebug
+  notify:
+    - restart httpd
+
+- name: Copy php.ini file
+  template: src=php.ini.j2 dest=/etc/php.ini
+  notify:
+    - restart httpd

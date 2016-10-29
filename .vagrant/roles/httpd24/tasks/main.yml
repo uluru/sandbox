@@ -1,0 +1,11 @@
+---
+- name: Installing Apache
+  yum: pkg={{ item }} state=present
+  with_items:
+    - httpd
+    - httpd-devel
+    - httpd-tools
+
+- name: Copy config file
+  template: src=vhost.conf.j2 dest=/etc/httpd/conf.d/vhost.conf
+  notify: restart httpd

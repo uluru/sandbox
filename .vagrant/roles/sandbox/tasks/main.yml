@@ -1,0 +1,14 @@
+---
+- name: Create application database
+  mysql_db: name={{ database_name }} state=present
+
+- name: Create application database user
+  mysql_user: name={{ database_user }} password={{ database_pass }} priv={{ database_name }}.*:ALL host='localhost' state=present
+
+- name: Change ownership of application installation
+  file: path=/share/{{ repository_name }}/ owner=vagrant group=vagrant state=directory recurse=yes
+
+- name: Composer installer
+  shell: curl -sS https://getcomposer.org/installer | php
+    chdir=/share/sandbox
+  sudo: no

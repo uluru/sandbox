@@ -1,0 +1,26 @@
+---
+# Mysql server port number
+mysql_port: 3306
+
+# Hostname used by apache conf
+server_hostname: sandbox.local
+
+# Disable All Updates
+auto_up_disable: false
+
+# Define Core Update Level
+core_update_level: true
+
+# Define remi repository url
+remi_repo_url: "http://rpms.famillecollet.com/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm"
+
+# Define remi key
+remi_repo_gpg_key_url: "http://rpms.remirepo.net/RPM-GPG-KEY-remi"
+
+# App directory
+repository_name: "sandbox"
+
+# Database credentials
+database_name: "sandbox"
+database_user: "sandbox"
+database_pass: "sandbox"
